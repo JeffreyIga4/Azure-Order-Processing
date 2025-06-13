@@ -1,10 +1,8 @@
 param location string = 'northeurope'
 param functionAppName string = 'orderprocessorfunc'
-param storageAccountName string = 'orderstorage123'
+param storageAccountName string = 'orderstoragejiga9876'
 param serviceBusNamespace string = 'orderservicebus'
 param keyVaultName string = 'orderkeyvault123'
-param apiMgmtName string = 'orderapim'
-param logicAppName string = 'orderlogicapp'
 
 // Adding resources: storage, service bus, function app, key vault, logic app, apim
 
@@ -27,7 +25,8 @@ resource serviceBus 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
 }
 
 resource queue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-preview' = {
-  name: '${serviceBus.name}/orderqueue'
+  name: 'orderqueue'
+  parent: serviceBus
   properties: {
     enablePartitioning: false
   }
