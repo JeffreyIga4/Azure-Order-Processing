@@ -18,15 +18,13 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Run Bicep deployment
-        uses: azure/arm-deploy@v1
-        with:
-          scope: resourcegroup
-          subscriptionId: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
-          resourceGroupName: rg-order-logic-northeurope
-          template: ./infra/main.bicep
-          parameters: location='northeurope'
-          deploymentName: deploy-${{ github.run_id }}
+      - name: Deploy Bicep template with Azure CLI
+        run: |
+          az deployment group create \
+          --name deploy-${{ github.run_number }} \
+          --resource-group rg-order-logic-northeurope \
+          --template-file ./infra/main.bicep \
+          --parameters location='northeurope'
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -39,8 +37,11 @@ jobs:
       - name: Build project
         run: dotnet build ./queue-function --configuration Release
 
+      - name: Publish function app
+        run: dotnet publish ./queue-function --configuration Release --output ./publish
+
       - name: Deploy Azure Function
         uses: Azure/functions-action@v1
         with:
           app-name: orderprocessorfunc
-          package: ./queue-function/bin/Release/net8.0/publish
+          package: ./publish
