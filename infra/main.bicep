@@ -1,7 +1,7 @@
 param location string = 'northeurope'
 param functionAppName string = 'orderprocessorfunc'
 param storageAccountName string = 'orderstoragejiga9876'
-param serviceBusNamespace string = 'orderservicebus'
+param serviceBusNamespace string = 'orderservicebusjiga1234'
 param keyVaultName string = 'orderkeyvault123'
 
 // Adding resources: storage, service bus, function app, key vault, logic app, apim
