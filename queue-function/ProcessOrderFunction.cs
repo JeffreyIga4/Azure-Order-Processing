@@ -41,9 +41,19 @@ public class ProcessOrderFunction
                 return;
             }
 
-            // Simulate order processing
+            if (string.IsNullOrWhiteSpace(order.Item) || order.Quantity <= 0)
+            {
+                _logger.LogWarning("Validation failed - Item: '{Item}', Quantity: {Quantity}", order.Item, order.Quantity);
+                await messageActions.DeadLetterMessageAsync(message,
+                new Dictionary<string, object>
+                {
+                    { "DeadLetterReason", "ValidationError" },
+                    { "DeadLetterErrorDescription", "Missing item or invalid quantity" }
+                });
+                return;
+            }
             _logger.LogInformation("Order Received - ID: {OrderId}, Item: {Item}, Quantity: {Quantity}",
-                order.OrderId, order.Item ?? "Unknown", order.Quantity);
+            order.OrderId, order.Item, order.Quantity);
 
             await messageActions.CompleteMessageAsync(message);
         }
