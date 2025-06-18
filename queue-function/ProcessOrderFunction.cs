@@ -28,7 +28,10 @@ public class ProcessOrderFunction
             var messageBody = message.Body.ToString();
             _logger.LogInformation("Message Body: {body}", message.Body);
 
-            var order = JsonSerializer.Deserialize<Order>(messageBody);
+            var order = JsonSerializer.Deserialize<Order>(messageBody, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
             if (order == null)
             {
                 _logger.LogWarning("Could not deserialize message to Order.");
