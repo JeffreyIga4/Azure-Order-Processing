@@ -1,5 +1,7 @@
 using System;
+using System.Text;
 using System.Text.Json;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
@@ -10,15 +12,19 @@ namespace Company.Function;
 public class ProcessOrderFunction
 {
     private readonly ILogger<ProcessOrderFunction> _logger;
+    private readonly HttpClient _httpClient;
+    private readonly string _logicAppUrl;
 
-    public ProcessOrderFunction(ILogger<ProcessOrderFunction> logger)
+    public ProcessOrderFunction(ILogger<ProcessOrderFunction> logger, HttpClient httpClient)
     {
         _logger = logger;
+        _httpClient = httpClient;
+        _logicAppUrl = Environment.GetEnvironmentVariable("LogicAppUrl") ?? throw new InvalidOperationException("LogicAppUrl not configured.");
     }
 
     [Function("ProcessOrderFunction")]
     public async Task Run(
-        [ServiceBusTrigger("orderqueue", Connection = "orderservicebusjiga_SERVICEBUS")]
+        [ServiceBusTrigger("orderqueue", Connection = "orderservicebusjiga1234_SERVICEBUS")]
         ServiceBusReceivedMessage message,
         ServiceBusMessageActions messageActions)
     {
@@ -57,6 +63,17 @@ public class ProcessOrderFunction
             }
             _logger.LogInformation("Order Received - ID: {OrderId}, Item: {Item}, Quantity: {Quantity}",
             order.OrderId, order.Item, order.Quantity);
+
+            var orderJson = JsonSerializer.Serialize(order);
+            var content = new StringContent(orderJson, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync(_logicAppUrl, content);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to POST to Logic App. Status: {Status}, Reason: {Reason}",
+                    response.StatusCode, response.ReasonPhrase);
+                throw new Exception("Logic App POST failed.");
+            }
 
             await messageActions.CompleteMessageAsync(message);
         }
