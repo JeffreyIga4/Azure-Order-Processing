@@ -1,17 +1,21 @@
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Company.Function;
+using Microsoft.Extensions.Logging;
+using Microsoft.ApplicationInsights.Extensibility;
 
-var builder = FunctionsApplication.CreateBuilder(args);
+var host = new HostBuilder()
+    .ConfigureFunctionsWorkerDefaults()
+    .ConfigureServices(services =>
+    {
+        services.AddHttpClient<ProcessOrderFunction>();
 
-builder.ConfigureFunctionsWebApplication();
+        services.AddApplicationInsightsTelemetryWorkerService();
+        services.Configure<TelemetryConfiguration>(config =>
+        {
+            config.ConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
+        });
+    })
+    .Build();
 
-builder.Services
-    .AddApplicationInsightsTelemetryWorkerService()
-    .ConfigureFunctionsApplicationInsights();
-
-builder.Services.AddHttpClient<ProcessOrderFunction>();
-
-builder.Build().Run();
+host.Run();
