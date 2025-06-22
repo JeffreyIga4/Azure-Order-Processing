@@ -4,7 +4,7 @@ This is a beginner-friendly Azure integration project that demonstrates serverle
 
 ---
 
-## ✅ What This Project Covers
+## What This Project Covers
 
 - Azure Function Apps
 - Azure Logic Apps
