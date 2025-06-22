@@ -16,7 +16,7 @@ This is a beginner-friendly Azure integration project that demonstrates serverle
 
 ---
 
-## 📐 Architecture Overview
+## Architecture Overview
 
 ```text
 [Client (Postman / Frontend)]
