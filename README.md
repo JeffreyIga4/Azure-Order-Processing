@@ -95,15 +95,10 @@ README.md             -> You're here!
 
 ## Prerequisites
 Azure CLI
-
 Postman (or curl)
-
 .NET 8 SDK
-
 Azure Subscription
-
 Gmail account (for Logic App connector)
-
 
 ## Deployment Steps
 1. Deploy infrastructure with Bicep:
