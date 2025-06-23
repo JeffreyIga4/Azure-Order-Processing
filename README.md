@@ -87,11 +87,13 @@ traces
 ```
 
 ## Repo Structure
+```
 /infra                -> Bicep infrastructure code
 /queue-function       -> .NET isolated Azure Function
 /.github/workflows    -> CI/CD workflows
-logic-app-notes.md    -> Alerting setup (optional)
-README.md             -> You're here!
+logic-app-notes.md    -> Alerting setup
+README.md
+```
 
 ## Prerequisites
 Azure CLI
