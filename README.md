@@ -42,6 +42,8 @@ This is a beginner-friendly Azure integration project that demonstrates serverle
 
 ---
 
+```
+
 ## How It Works
 
 ### Order Placement
@@ -82,6 +84,7 @@ traces
 | where timestamp > ago(15m)
 | where message contains "Order Received"
 | order by timestamp desc
+```
 
 ## Repo Structure
 /infra                -> Bicep infrastructure code
@@ -108,10 +111,11 @@ Gmail account (for Logic App connector)
   --resource-group <your-rg> \
   --template-file ./infra/main.bicep \
   --parameters ...
-2. Push Function App code and trigger GitHub Actions workflow.
+   
+3. Push Function App code and trigger GitHub Actions workflow.
 
-3. Use Postman or curl to send sample orders.
+4. Use Postman or curl to send sample orders.
 
-4. View logs in Application Insights and monitor alerts in Azure Monitor.
+5. View logs in Application Insights and monitor alerts in Azure Monitor.
 
 
