@@ -39,10 +39,8 @@ This is a beginner-friendly Azure integration project that demonstrates serverle
         v
 [Complete or Deadletter Processing]
 
-
----
-
 ```
+---
 
 ## How It Works
 
@@ -105,6 +103,8 @@ Postman (or curl)
 Azure Subscription
 
 Gmail account (for Logic App connector)
+
+---
 
 ## Deployment Steps
 1. Deploy infrastructure with Bicep:
