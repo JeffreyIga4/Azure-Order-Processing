@@ -14,12 +14,16 @@ public class ProcessOrderFunction
     private readonly ILogger<ProcessOrderFunction> _logger;
     private readonly HttpClient _httpClient;
     private readonly string _logicAppUrl;
+    private readonly string _alertLogicAppUrl;
+
 
     public ProcessOrderFunction(ILogger<ProcessOrderFunction> logger, HttpClient httpClient)
     {
         _logger = logger;
         _httpClient = httpClient;
         _logicAppUrl = Environment.GetEnvironmentVariable("LogicAppUrl") ?? throw new InvalidOperationException("LogicAppUrl not configured.");
+        _alertLogicAppUrl = Environment.GetEnvironmentVariable("AlertLogicAppUrl") ?? throw new InvalidOperationException("AlertLogicAppUrl not configured.");
+
     }
 
     [Function("ProcessOrderFunction")]
@@ -53,6 +57,30 @@ public class ProcessOrderFunction
             if (string.IsNullOrWhiteSpace(order.Item) || order.Quantity <= 0)
             {
                 _logger.LogWarning("Validation failed - Item: '{Item}', Quantity: {Quantity}", order.Item, order.Quantity);
+                _logger.LogInformation("Posting validation alert to Logic App at: {url}", _alertLogicAppUrl);
+
+                var alertPayload = new
+                {
+                    orderId = order.OrderId,
+                    item = order.Item,
+                    quantity = order.Quantity,
+                    messageId = message.MessageId,
+                    reason = "ValidationError",
+                    detail = "Missing item or invalid quantity"
+                };
+
+                 var alertContent = new StringContent(JsonSerializer.Serialize(alertPayload), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var alertResponse = await _httpClient.PostAsync(_alertLogicAppUrl, alertContent);
+                     _logger.LogInformation("Validation alert sent. Status: {Status}", alertResponse.StatusCode);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send alert.");
+                }
+
                 await messageActions.DeadLetterMessageAsync(message,
                 new Dictionary<string, object>
                 {
@@ -77,6 +105,8 @@ public class ProcessOrderFunction
 
             await messageActions.CompleteMessageAsync(message);
         }
+
+        
         catch (JsonException ex)
         {
             _logger.LogError(ex, "Invalid JSON format. Sending message to dead-letter queue.");
