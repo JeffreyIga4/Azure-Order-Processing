@@ -3,6 +3,8 @@ param functionAppName string = 'orderprocessorfunc'
 param storageAccountName string = 'orderstoragejiga9876'
 param serviceBusNamespace string = 'orderservicebusjiga1234'
 param keyVaultName string = 'orderkeyvault123'
+param logicAppName string = 'logicapp-scheduled-check'
+
 
 // Adding resources: storage, service bus, function app, key vault, logic app, apim
 
@@ -76,5 +78,18 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
         }
       ]
     }
+  }
+}
+
+@allowed([
+  'true'
+  'false'
+])
+param deployLogicApp string = 'true'
+
+module alerting 'alerting.bicep' = if (deployLogicApp == 'true') {
+  name: 'deployScheduledLogicApp'
+  params: {
+    workflows_logicapp_scheduled_check_name: logicAppName
   }
 }
