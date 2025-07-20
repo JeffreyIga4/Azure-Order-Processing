@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": { "value": "northeurope" },
+    "functionAppName": { "value": "orderprocessorfunc" },
+    "storageAccountName": { "value": "orderstoragejiga9876" },
+    "serviceBusNamespace": { "value": "orderservicebusjiga1234" },
+    "keyVaultName": { "value": "orderkeyvault123" },
+    "logicAppName": { "value": "logicapp-scheduled-check" },
+    "deployLogicApp": { "value": "true" },
+    "healthCheckUrlBase": {
+      "value": "https://healthcheckfunc-jiga.azurewebsites.net/api/HealthCheckFunction"
+    },
+    "healthCheckKeySecretId": {
+      "value": "https://orderkeyvault123.vault.azure.net/secrets/healthcheck-key/0fd0f147e3844cdeae341b0760869f09"
+    }
+  }
+}
