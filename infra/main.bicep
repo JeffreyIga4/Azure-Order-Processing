@@ -91,7 +91,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
 ])
 param deployLogicApp string = 'true'
 
-module alerting '../../Azure-HealthCheck/alerting.bicep' = if (deployLogicApp == 'true') {
+module alerting './alerting.bicep' = if (deployLogicApp == 'true') {
   name: 'deployScheduledLogicApp'
   params: {
     workflows_logicapp_scheduled_check_name: logicAppName
